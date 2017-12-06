@@ -25,6 +25,7 @@ redis = redis.Redis(host='127.0.0.1', port=6379, db=0)
 app = Flask(__name__)
 
 class NodeItemTable(Table):
+    name = Col('Name')
     node_id = Col('NodeID')
     address = Col('Address')
     port = Col("Port")
@@ -65,7 +66,9 @@ def get_nodes():
         return "Nodes get error!"
 
 def server_run():
-    app.run(ip='0.0.0.0', port=5000)
+    redis.hdel('NodeHB')
+    logging.info("Start Server on port : 5000")
+    app.run(host='0.0.0.0', port=5000)
 
 if __name__ == '__main__':
     server_run()

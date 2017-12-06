@@ -15,5 +15,6 @@ The server for handling the clients status info.
 ## daemon (run in background)
 	<code>pip install python-deamon</code>
   
-# Run Server (background)
-	python start.py
+# Run Server 
+	python main.py
+	nohup python main.py & (run in background)
