@@ -12,5 +12,8 @@ The server for handling the clients status info.
   <code>pip install flask</code><br>
   <code>pip install flask_table</code>
 
-# Run Server
-	python main.py -d
+## daemon (run in background)
+	<code>pip install python-deamon</code>
+  
+# Run Server (background)
+	python start.py

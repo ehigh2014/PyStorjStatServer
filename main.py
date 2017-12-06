@@ -12,7 +12,16 @@ from flask import Response
 from flask_table import Table, Col
 import redis
 
+import logging 
+
+logging.basicConfig(level=logging.INFO,
+                format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                datefmt='%a, %d %b %Y %H:%M:%S',
+                filename='server.log',
+                filemode='w')
+
 redis = redis.Redis(host='127.0.0.1', port=6379, db=0)
+
 app = Flask(__name__)
 
 class NodeItemTable(Table):
@@ -21,11 +30,10 @@ class NodeItemTable(Table):
     port = Col("Port")
     allocs = Col('Allocs')
     shared = Col('Shared')
-    lastSeen = Col('LastSeen')
     timestamp = Col('TStamp')
+    lastSeen = Col('LastSeen')
     responseTime = Col('ResponseTime')
-    timeoutRate = Col('TimeoutRate')
-    
+   
 def Response_headers(content):
     resp = Response(content)
     resp.headers['Access-Control-Allow-Origin'] = '*'
@@ -48,10 +56,17 @@ def hb_post():
 
 @app.route('/nodes')
 def get_nodes():
-    nodes = get_node_list()
-    table = NodeItemTable(nodes)
-    return table.__html__()
+    try:
+        nodes = get_node_list()
+        table = NodeItemTable(nodes)
+        return table.__html__()
+    except Exception, e:
+        logging.error(e)
+        return "Nodes get error!"
+
+def server_run():
+    app.run(ip='0.0.0.0', port=5000)
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    server_run()
     
