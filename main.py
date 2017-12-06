@@ -66,7 +66,6 @@ def get_nodes():
         return "Nodes get error!"
 
 def server_run():
-    redis.hdel('NodeHB')
     logging.info("Start Server on port : 5000")
     app.run(host='0.0.0.0', port=5000)
 
