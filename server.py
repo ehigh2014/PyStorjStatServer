@@ -13,6 +13,7 @@ from flask_table import Table, Col
 import redis
 
 import logging 
+import time
 
 logging.basicConfig(level=logging.INFO,
                 format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -40,18 +41,28 @@ def Response_headers(content):
     resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
 
+def CheckKeys(n):
+    keys = ["shared", "lastSeen", "responseTime", "allocs", "port", "address"]
+    for k in keys:
+        if k not in n:
+            return False
+    return True
+
 def get_node_list():
     nodes = []
     for node in redis.hvals('NodeHB'):
         if type(node) is str:
             node = eval(node)
-        nodes.append(node)
+        if CheckKeys(node):
+            nodes.append(node)
     return nodes
 
 @app.route('/hb', methods=['POST'])
 def hb_post():
     hb = request.form.to_dict()
     redis.hset('NodeHB', hb['node_id'], hb)
+    ts = int(time.time())
+    redis.hset(hb['node_id'], ts, hb)
     content = str(hb)
     return Response_headers(content)
 
@@ -69,6 +80,5 @@ def server_run():
     logging.info("Start Server on port : 5000")
     app.run(host='0.0.0.0', port=5000)
 
-if __name__ == '__main__':
-    server_run()
+server_run()
     
